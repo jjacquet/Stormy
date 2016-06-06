@@ -11,8 +11,9 @@ public class CurrentWeather {
 
     private String mIcon;
     private long mTime;
-    private double mTempature;
+    private double mTemperature;
     private double mHumidity;
+    private double mPrecipChance;
     private String mSummary;
     private String mTimeZone;
 
@@ -67,7 +68,7 @@ public class CurrentWeather {
             iconId = R.mipmap.cloudy_night;
         }
 
-        return getIconId();
+        return iconId;
     }
 
     public long getTime() {
@@ -86,12 +87,12 @@ public class CurrentWeather {
         mTime = time;
     }
 
-    public int getTempature() {
-        return (int)Math.round(mTempature);
+    public double getTemperature() {
+        return mTemperature;
     }
 
-    public void setTempature(double tempature) {
-        mTempature = tempature;
+    public void setTemperature(double temperature) {
+        mTemperature = temperature;
     }
 
     public double getHumidity() {
@@ -108,5 +109,13 @@ public class CurrentWeather {
 
     public void setSummary(String summary) {
         mSummary = summary;
+    }
+
+    public double getPrecipChance() {
+        return mPrecipChance;
+    }
+
+    public void setPrecipChance(double precipChance) {
+        mPrecipChance = precipChance;
     }
 }

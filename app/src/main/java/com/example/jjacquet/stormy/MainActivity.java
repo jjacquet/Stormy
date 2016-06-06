@@ -8,6 +8,7 @@ import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -111,12 +112,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void updateDisplay() {
-        mTemperatureLabel.setText(mCurrentWeather.getTempature() + "");
+        mTemperatureLabel.setText(mCurrentWeather.getTemperature() + "");
         mTimeLabel.setText("At " + mCurrentWeather.getFormattedTime() + " it will be");
         mHumidityValue.setText(mCurrentWeather.getHumidity() + "");
-        mPrecipValue.setText(mCurrentWeather.getPrecipChance());
+//        mPrecipValue.setText(mCurrentWeather.getPrecipChance());
         mSummaryLabel.setText(mCurrentWeather.getSummary());
-        Drawable drawable = getResources().getDrawable(mCurrentWeather.getIconId());
+        Drawable drawable = ContextCompat.getDrawable(this, mCurrentWeather.getIconId());
         mIconImageView.setImageDrawable(drawable);
     }
 
@@ -131,13 +132,14 @@ public class MainActivity extends AppCompatActivity {
         currentWeather.setHumidity(currently.getDouble("humidity"));
         currentWeather.setTime(currently.getLong("time"));
         currentWeather.setIcon(currently.getString("icon"));
+        currentWeather.setPrecipChance(currently.getDouble("precipProbability"));
         currentWeather.setSummary(currently.getString("summary"));
-        currentWeather.setTempature(currently.getDouble("temperature"));
+        currentWeather.setTemperature(currently.getDouble("temperature"));
         currentWeather.setTimeZone(timezone);
 
         Log.d(TAG, currentWeather.getFormattedTime());
 
-        return new CurrentWeather();
+        return currentWeather;
     }
 
     private boolean isNetworkAvailable() {
