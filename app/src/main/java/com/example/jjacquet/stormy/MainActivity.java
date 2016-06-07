@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -38,29 +39,52 @@ public class MainActivity extends AppCompatActivity {
 
     private CurrentWeather mCurrentWeather;
 
+   /* Butterknife is a Gradle dependency which uses injection as a field and method binding for Android views and
+      uses annotation processing to generate boilerplate code for you.
+     - Eliminate findViewById calls by using @BindView on fields.
+     - Group multiple views in a list or array. Operate on all of them at once with actions, setters, or properties.
+     - Eliminate anonymous inner-classes for listeners by annotating methods with @OnClick and others.
+     - Eliminate resource lookups by using resource annotations on fields.
+     */
     @BindView(R.id.timeLabel) TextView mTimeLabel;
     @BindView(R.id.temperatureLabel) TextView mTemperatureLabel;
     @BindView(R.id.humidityValue) TextView mHumidityValue;
     @BindView(R.id.precipValue) TextView mPrecipValue;
     @BindView(R.id.summaryLabel) TextView mSummaryLabel;
     @BindView(R.id.iconImageView) ImageView mIconImageView;
+    @BindView(R.id.refreshImageView) ImageView mRefreshImageView;
+    @BindView(R.id.progressBar) ProgressBar mProgressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
+        mProgressBar.setVisibility(View.INVISIBLE);
+        final double latitude = 34.0522;
+        final double longitude = -118.2437;
+
+        mRefreshImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getForecast(latitude, longitude);
+            }
+        });
 
 
+        getForecast(latitude, longitude);
 
+        Log.d(TAG, "Main UI code is running!");
+
+    }
+
+    private void getForecast(double latitude, double longitude) {
         String apiKey = "7b224fe55e3ec3a80cf0631d57928150";
-        // hard coded for Los Angeles
-        double latitude = 34.0522;
-        double longitude = -118.2437;
         String forecastUrl = "https://api.forecast.io/forecast/"+ apiKey +
                 "/" + latitude +","+ longitude;
 
         if (isNetworkAvailable()) {
+            toggleRefresh();
 
             OkHttpClient client = new OkHttpClient();
             Request request = new Request.Builder().url(forecastUrl)
@@ -70,11 +94,24 @@ public class MainActivity extends AppCompatActivity {
             call.enqueue(new Callback() {
                 @Override
                 public void onFailure(Call call, IOException e) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            toggleRefresh();
+                        }
+                    });
+                    alertUserAboutError();
 
                 }
 
                 @Override
                 public void onResponse(Call call, Response response) throws IOException {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            toggleRefresh();
+                        }
+                    });
 
                     try {
                         String jsonData = response.body().string();
@@ -106,8 +143,17 @@ public class MainActivity extends AppCompatActivity {
         else {
             Toast.makeText(this, R.string.network_is_unavailable, Toast.LENGTH_LONG).show();
         }
+    }
 
-        Log.d(TAG, "Main UI code is running!");
+    private void toggleRefresh() {
+        if (mProgressBar.getVisibility() == View.INVISIBLE){
+            mProgressBar.setVisibility(View.VISIBLE);
+            mRefreshImageView.setVisibility(View.INVISIBLE);
+        }
+        else {
+            mProgressBar.setVisibility(View.INVISIBLE);
+            mRefreshImageView.setVisibility(View.VISIBLE);
+        }
 
     }
 
@@ -115,7 +161,7 @@ public class MainActivity extends AppCompatActivity {
         mTemperatureLabel.setText(mCurrentWeather.getTemperature() + "");
         mTimeLabel.setText("At " + mCurrentWeather.getFormattedTime() + " it will be");
         mHumidityValue.setText(mCurrentWeather.getHumidity() + "");
-//        mPrecipValue.setText(mCurrentWeather.getPrecipChance());
+        mPrecipValue.setText(mCurrentWeather.getPrecipChance() + "%");
         mSummaryLabel.setText(mCurrentWeather.getSummary());
         Drawable drawable = ContextCompat.getDrawable(this, mCurrentWeather.getIconId());
         mIconImageView.setImageDrawable(drawable);
