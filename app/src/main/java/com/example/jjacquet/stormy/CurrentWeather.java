@@ -25,7 +25,7 @@ public class CurrentWeather {
         mTimeZone = timeZone;
     }
 
-    public String getIcon() {
+    public String getIcon(int clear_day) {
         return mIcon;
     }
 
@@ -119,4 +119,7 @@ public class CurrentWeather {
     public void setPrecipChance(double precipChance) {
         mPrecipChance = precipChance;
     }
+
+
+
 }

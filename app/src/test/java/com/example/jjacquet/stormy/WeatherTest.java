@@ -5,13 +5,15 @@ import android.support.v4.content.ContextCompat;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
 /**
- * To work on unit tests, switch the Test Artifact in the Build Variants view.
+ * This is an example of unit testing my weather application and verying that the methods function and return data.
  */
-public class WeatherTest {
+
+public class WeatherTest extends MainActivity {
 
     private CurrentWeather currentWeather;
 
@@ -20,19 +22,25 @@ public class WeatherTest {
         currentWeather = new CurrentWeather();
     }
 
+
     @Test
-    public void temperatureIsCorrect() throws Exception {
-        double DELTA = -100.0;
-        currentWeather.setTemperature(100.0);
-        assertEquals(100.0, currentWeather.getTemperature(), DELTA);
+    public void temperatureIsPresent() throws Exception {
+        currentWeather.setTemperature(100);
+        assertNotNull(currentWeather.getTemperature());
         System.out.println(currentWeather.getTemperature());
     }
 
     @Test
     public void weatherIconIsPresent() throws Exception {
-        currentWeather.getIcon();
-        assertEquals(currentWeather.getIcon(), currentWeather.getIcon());
-        System.out.println(currentWeather.getIcon());
+        currentWeather.setIcon("");
+        assertNotNull(currentWeather.getIconId());
+        System.out.println(currentWeather.getIconId());
+    }
+
+    @Test
+    public void timeZoneIsPresent() throws Exception {
+        currentWeather.setTimeZone("");
+        System.out.println(currentWeather.getTimeZone());
     }
 
     @After
@@ -41,3 +49,4 @@ public class WeatherTest {
 
     }
 }
+
